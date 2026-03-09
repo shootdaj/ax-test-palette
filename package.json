@@ -1,0 +1,40 @@
+{
+  "name": "ax-test-palette",
+  "version": "1.0.0",
+  "description": "Color Palette Generator API — generate harmonious color palettes and convert between color formats",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "vitest run",
+    "test:unit": "vitest run --dir test/unit",
+    "test:integration": "vitest run --dir test/integration",
+    "test:scenarios": "vitest run --dir test/scenarios",
+    "lint": "eslint src/ test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shootdaj/ax-test-palette.git"
+  },
+  "keywords": [
+    "color",
+    "palette",
+    "generator",
+    "api",
+    "color-theory"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shootdaj/ax-test-palette/issues"
+  },
+  "homepage": "https://github.com/shootdaj/ax-test-palette#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.0.3",
+    "supertest": "^7.2.2",
+    "vitest": "^4.0.18"
+  }
+}
