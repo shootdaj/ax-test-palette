@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Palette Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .color-input-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+    }
+
+    input[type="color"] {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid #555;
+      border-radius: 6px;
+    }
+
+    input[type="text"] {
+      background: transparent;
+      border: none;
+      color: #e0e0e0;
+      font-size: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      width: 90px;
+      outline: none;
+    }
+
+    select {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 0.95rem;
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    select:hover { border-color: #555; }
+
+    button {
+      background: #4d96ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 1.5rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    button:hover { background: #3a7bd5; }
+
+    .palette-container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .palette-label {
+      font-size: 0.85rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+
+    .palette {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .color-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+      width: 160px;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .color-card:hover {
+      transform: translateY(-2px);
+      border-color: #555;
+    }
+
+    .color-swatch {
+      height: 120px;
+      width: 100%;
+    }
+
+    .color-info {
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .color-info .format {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.2rem 0;
+      color: #aaa;
+    }
+
+    .color-info .format .label { color: #666; }
+    .color-info .format .value { color: #ccc; }
+
+    .error {
+      color: #ff6b6b;
+      background: #2a1515;
+      border: 1px solid #442222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+      display: none;
+      max-width: 500px;
+    }
+
+    .api-info {
+      margin-top: 3rem;
+      color: #555;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .api-info a { color: #4d96ff; text-decoration: none; }
+    .api-info a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>Color Palette Generator</h1>
+  <p class="subtitle">Generate harmonious color palettes using color theory</p>
+
+  <div class="controls">
+    <div class="color-input-group">
+      <input type="color" id="colorPicker" value="#4d96ff">
+      <input type="text" id="hexInput" value="#4d96ff" placeholder="#000000">
+    </div>
+
+    <select id="harmonyType">
+      <option value="complementary">Complementary</option>
+      <option value="analogous">Analogous</option>
+      <option value="triadic">Triadic</option>
+      <option value="split-complementary">Split Complementary</option>
+      <option value="tetradic">Tetradic</option>
+    </select>
+
+    <button id="generateBtn">Generate</button>
+  </div>
+
+  <div class="palette-container">
+    <p class="palette-label" id="paletteLabel"></p>
+    <div class="palette" id="palette"></div>
+  </div>
+
+  <div class="error" id="error"></div>
+
+  <div class="api-info">
+    <p>API endpoints:
+      <a href="/api/palette/complementary?color=%234d96ff">/api/palette/{type}?color=#hex</a> |
+      <a href="/api/convert?color=%234d96ff">/api/convert?color=#hex</a> |
+      <a href="/api/health">/api/health</a>
+    </p>
+  </div>
+
+  <script>
+    const colorPicker = document.getElementById('colorPicker');
+    const hexInput = document.getElementById('hexInput');
+    const harmonyType = document.getElementById('harmonyType');
+    const generateBtn = document.getElementById('generateBtn');
+    const paletteEl = document.getElementById('palette');
+    const paletteLabelEl = document.getElementById('paletteLabel');
+    const errorEl = document.getElementById('error');
+
+    // Sync color picker and text input
+    colorPicker.addEventListener('input', () => {
+      hexInput.value = colorPicker.value;
+    });
+
+    hexInput.addEventListener('input', () => {
+      const val = hexInput.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        colorPicker.value = val;
+      }
+    });
+
+    // Generate palette
+    generateBtn.addEventListener('click', generatePalette);
+    harmonyType.addEventListener('change', generatePalette);
+
+    // Also generate on Enter key in hex input
+    hexInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') generatePalette();
+    });
+
+    async function generatePalette() {
+      const color = hexInput.value.trim();
+      const type = harmonyType.value;
+      errorEl.style.display = 'none';
+
+      try {
+        const encodedColor = encodeURIComponent(color);
+        const res = await fetch(`/api/palette/${type}?color=${encodedColor}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.textContent = data.message || data.error || 'Unknown error';
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        paletteLabelEl.textContent = `${type} palette`;
+        paletteEl.innerHTML = '';
+
+        data.palette.forEach((c) => {
+          const card = document.createElement('div');
+          card.className = 'color-card';
+          card.innerHTML = `
+            <div class="color-swatch" style="background: ${c.hex}"></div>
+            <div class="color-info">
+              <div class="format"><span class="label">HEX</span><span class="value">${c.hex}</span></div>
+              <div class="format"><span class="label">RGB</span><span class="value">${c.rgb.r}, ${c.rgb.g}, ${c.rgb.b}</span></div>
+              <div class="format"><span class="label">HSL</span><span class="value">${Math.round(c.hsl.h)}, ${Math.round(c.hsl.s)}%, ${Math.round(c.hsl.l)}%</span></div>
+            </div>
+          `;
+          paletteEl.appendChild(card);
+        });
+      } catch (err) {
+        errorEl.textContent = 'Network error: ' + err.message;
+        errorEl.style.display = 'block';
+      }
+    }
+
+    // Generate initial palette on load
+    generatePalette();
+  </script>
+</body>
+</html>

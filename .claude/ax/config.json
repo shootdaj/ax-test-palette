@@ -41,6 +41,12 @@
       "title": "Core Color Engine",
       "started_at": "2026-03-10T12:05:00Z",
       "completed_at": "2026-03-10T12:15:00Z"
+    },
+    {
+      "phase": 2,
+      "title": "API Endpoints & Validation",
+      "started_at": "2026-03-10T12:16:00Z",
+      "completed_at": "2026-03-10T12:25:00Z"
     }
   ],
   "milestone_history": [],
